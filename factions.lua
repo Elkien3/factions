@@ -79,9 +79,9 @@ factions.permissions = {"disband", "claim", "playerslist", "build", "description
 function factions.Faction:new(faction) 
     faction = {
         --! @brief power of a faction (needed for parcel claiming)
-        power = 8.,
+        power = 2.,
         --! @brief maximum power of a faction
-        maxpower = 8.,
+        maxpower = 2.,
         --! @brief power currently in use
         usedpower = 0.,
         --! @brief list of player names

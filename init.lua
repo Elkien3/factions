@@ -12,7 +12,7 @@
 -- Contact sapier a t gmx net
 -------------------------------------------------------------------------------
 
-factions_version = "0.8.0"
+factions_version = "0.8.1"
 
 core.log("action", "MOD: factions (by sapier) loading ...")
 
