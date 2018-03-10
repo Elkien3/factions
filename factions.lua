@@ -62,7 +62,6 @@ util = {
 
 factions.Faction.__index = factions.Faction
 
-
 -- Faction permissions:
 --
 -- disband: disband the faction
@@ -75,12 +74,14 @@ factions.Faction.__index = factions.Faction
 -- banner: set the faction's banner
 -- promote: set a player's rank
 
+factions.permissions = {"disband", "claim", "playerslist", "build", "description", "ranks", "spawn", "banner", "promote"}
+
 function factions.Faction:new(faction) 
     faction = {
         --! @brief power of a faction (needed for parcel claiming)
-        power = 0.,
+        power = 8.,
         --! @brief maximum power of a faction
-        maxpower = 0.,
+        maxpower = 8.,
         --! @brief power currently in use
         usedpower = 0.,
         --! @brief list of player names
@@ -723,10 +724,9 @@ factions.faction_tick = function()
         end
     end
 end
-
+--[[
 local hudUpdate = 0.
 local factionUpdate = 0.
-
 
 minetest.register_globalstep(
 function(dtime)
@@ -756,6 +756,36 @@ function(dtime)
     end
 end
 )
+--]]
+hudUpdate = function()
+	minetest.after(.5, 
+	function()
+		local playerslist = minetest.get_connected_players()
+		for i in pairs(playerslist) do
+			local player = playerslist[i]
+			local faction = factions.get_faction_at(player:getpos())
+			player:hud_remove("factionLand")
+			player:hud_add({
+				hud_elem_type = "text",
+				name = "factionLand",
+				number = 0xFFFFFF,
+				position = {x=0.1, y = .98},
+				text = (faction and faction.name) or "Wilderness",
+				scale = {x=1, y=1},
+				alignment = {x=0, y=0},
+			})
+		end
+		hudUpdate()
+	end)
+end
+factionUpdate = function()
+	minetest.after(factions.tick_time, 
+	function()
+		factions.faction_tick()
+		factionUpdate()
+	end)
+end
+
 minetest.register_on_joinplayer(
 function(player)
     local faction = factions.get_player_faction(player:get_player_name())
@@ -779,7 +809,6 @@ minetest.register_on_respawnplayer(
         end
     end
 )
-
 
 
 
@@ -822,3 +851,5 @@ minetest.is_protected = function(pos, player)
     end
 end
 
+hudUpdate()
+factionUpdate()
