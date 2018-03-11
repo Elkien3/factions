@@ -5,8 +5,8 @@
 --
 --! @file init.lua
 --! @brief factions mod to be used by other mods
---! @copyright Sapier
---! @author Sapier
+--! @copyright Sapier, Coder12a
+--! @author Sapier, Coder12a
 --! @date 2013-05-08
 --!
 -- Contact sapier a t gmx net

@@ -5,8 +5,8 @@
 --
 --! @file factions.lua
 --! @brief factions core file
---! @copyright Sapier, agrecascino, shamoanjac
---! @author Sapier, agrecascino, shamoanjac
+--! @copyright Sapier, agrecascino, shamoanjac, Coder12a
+--! @author Sapier, agrecascino, shamoanjac, Coder12a
 --! @date 2016-08-12
 --
 -- Contact sapier a t gmx net
