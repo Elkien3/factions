@@ -409,33 +409,41 @@ factions.register_command("newrank", {
     format = {"string","string","string","string","string","string","string","string","string","string"},
     faction_permissions = {"ranks"},
     on_success = function(player, faction, pos, parcelpos, args)
-        local rank = args.strings[1]
-        if faction.ranks[rank] then
-            send_error(player, "Rank already exists")
-            return false
-        end
-		local success = false
-		local failindex = -1
-		for _, f in pairs(args.strings) do
-			if f then
-				for q, r in pairs(factions.permissions) do
-					if f == r then
-						success = true
+		if args.strings[1] then
+			local rank = args.strings[1]
+			if faction.ranks[rank] then
+				send_error(player, "Rank already exists")
+				return false
+			end
+			local success = false
+			local failindex = -1
+			for _, f in pairs(args.strings) do
+				if f then
+					for q, r in pairs(factions.permissions) do
+						if f == r then
+							success = true
+							break
+						end
+					end
+					if not success and _ ~= 1 then
+						failindex = _
 						break
 					end
 				end
-				if not success and _ ~= 1 then
-					failindex = _
-					break
-				end
 			end
+			if not success then
+				if args.strings[failindex] then
+					send_error(player, "Permission " .. args.strings[failindex] .. " is invalid.")
+					else
+					send_error(player, "No permission was given.")
+				end
+				return false
+			end
+			faction:add_rank(rank, args.other)
+			return true
 		end
-		if not success then
-			send_error(player, "Permission " .. args.strings[failindex] .. " is invalid.")
-			return false
-        end
-        faction:add_rank(rank, args.other)
-        return true
+		send_error(player, "No rank was given.")
+		return false
     end
 },true)
 

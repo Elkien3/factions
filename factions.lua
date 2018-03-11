@@ -185,10 +185,18 @@ function factions.Faction.add_player(self, player, rank)
     factions.save()
 end
 
+function factions.Faction.check_players_in_faction(self)
+	local players = #self.players
+	if players < 1 then
+		self:disband("Zero players on faction.")
+	end
+end
+
 function factions.Faction.remove_player(self, player)
     self.players[player] = nil
     factions.players[player] = nil
     self:on_player_leave(player)
+	self:check_players_in_faction(self)
     factions.save()
 end
 
