@@ -715,7 +715,6 @@ function(player)
     if not faction then
         return true
     end
-	minetest.chat_send_all("text")
     faction:decrease_power(factions.power_per_death)
     return true
 end
