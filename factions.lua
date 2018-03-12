@@ -27,15 +27,15 @@ factions.players = {}
 
 factions.factions = {}
 --- settings
-factions.protection_max_depth = -512
-factions.power_per_parcel = .5
-factions.power_per_death = .25
-factions.power_per_tick = .125
-factions.tick_time = 60.
-factions.power_per_attack = 10.
-factions.faction_name_max_length = 50
-factions.rank_name_max_length = 25
-factions.maximum_faction_inactivity = 604800 -- 1 week
+factions.protection_max_depth = config.protection_max_depth
+factions.power_per_parcel = config.power_per_parcel
+factions.power_per_death = config.power_per_death
+factions.power_per_tick = config.power_per_tick
+factions.tick_time = config.tick_time
+factions.power_per_attack = config.power_per_attack
+factions.faction_name_max_length = config.faction_name_max_length
+factions.rank_name_max_length = config.rank_name_max_length
+factions.maximum_faction_inactivity = config.maximum_faction_inactivity
 
 ---------------------
 --! @brief returns whether a faction can be created or not (allows for implementation of blacklists and the like)
@@ -79,9 +79,9 @@ factions.permissions = {"disband", "claim", "playerslist", "build", "description
 function factions.Faction:new(faction) 
     faction = {
         --! @brief power of a faction (needed for parcel claiming)
-        power = 2.,
+        power = config.power,
         --! @brief maximum power of a faction
-        maxpower = 2.,
+        maxpower = config.maxpower,
         --! @brief power currently in use
         usedpower = 0.,
         --! @brief list of player names
@@ -715,6 +715,7 @@ function(player)
     if not faction then
         return true
     end
+	minetest.chat_send_all("text")
     faction:decrease_power(factions.power_per_death)
     return true
 end
