@@ -765,6 +765,9 @@ function(dtime)
 end
 )
 --]]
+
+hud_ids = {}
+
 hudUpdate = function()
 	minetest.after(.5, 
 	function()
@@ -772,16 +775,7 @@ hudUpdate = function()
 		for i in pairs(playerslist) do
 			local player = playerslist[i]
 			local faction = factions.get_faction_at(player:getpos())
-			player:hud_remove("factionLand")
-			player:hud_add({
-				hud_elem_type = "text",
-				name = "factionLand",
-				number = 0xFFFFFF,
-				position = {x=0.1, y = .98},
-				text = (faction and faction.name) or "Wilderness",
-				scale = {x=1, y=1},
-				alignment = {x=0, y=0},
-			})
+			player:hud_change(hud_ids[player:get_player_name()],"text",(faction and faction.name) or "Wilderness")
 		end
 		hudUpdate()
 	end)
@@ -796,12 +790,31 @@ end
 
 minetest.register_on_joinplayer(
 function(player)
-    local faction = factions.get_player_faction(player:get_player_name())
+	local name = player:get_player_name()
+	hud_ids[name] = player:hud_add({
+		hud_elem_type = "text",
+		name = "factionLand",
+		number = 0xFFFFFF,
+		position = {x=0.1, y = .98},
+		text = "Wilderness",
+		scale = {x=1, y=1},
+		alignment = {x=0, y=0},
+	})
+    local faction = factions.get_player_faction(name)
     if faction then
         faction.last_logon = os.time()
     end
 end
 )
+
+minetest.register_on_leaveplayer(
+	function(player)
+		local name = player:get_player_name()
+		player:hud_remove(hud_ids[name])
+		hud_ids[name] = nil
+	end
+)
+
 minetest.register_on_respawnplayer(
     function(player)
         local faction = factions.get_player_faction(player:get_player_name())

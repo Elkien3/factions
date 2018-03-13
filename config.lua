@@ -1,3 +1,17 @@
+-------------------------------------------------------------------------------
+-- factions Mod by Sapier
+--
+-- License WTFPL
+--
+--! @file config.lua
+--! @brief settings file
+--! @copyright Coder12a
+--! @author Coder12a
+--! @date 2018-03-13
+--
+-- Contact sapier a t gmx net
+-------------------------------------------------------------------------------
+
 config = {}
 config.protection_max_depth = tonumber(minetest.setting_get("protection_max_depth"))
 config.power_per_parcel = tonumber(minetest.setting_get("power_per_parcel"))
