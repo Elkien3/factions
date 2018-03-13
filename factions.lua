@@ -774,8 +774,11 @@ hudUpdate = function()
 		local playerslist = minetest.get_connected_players()
 		for i in pairs(playerslist) do
 			local player = playerslist[i]
+			local name = player:get_player_name()
 			local faction = factions.get_faction_at(player:getpos())
-			player:hud_change(hud_ids[player:get_player_name()],"text",(faction and faction.name) or "Wilderness")
+			if hud_ids[name] then
+				player:hud_change(hud_ids[name],"text",(faction and faction.name) or "Wilderness")
+			end
 		end
 		hudUpdate()
 	end)
