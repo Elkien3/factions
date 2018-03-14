@@ -1,4 +1,4 @@
-[Settings]
+[ValueSettings]
 
 # The max depth of protection from a parcel.
 protection_max_depth (Protection max depth) float -512
@@ -22,3 +22,8 @@ maximum_faction_inactivity (Maximum faction inactivity) int 604800
 power (Starting power) float 2
 # Maximum power of a faction.
 maxpower (Maximum power) float 2
+
+[BoolSettings]
+
+# Enable or disabled attack_parcel function.
+attack_parcel (Enable attack parcel) bool false

@@ -404,21 +404,22 @@ function factions.Faction.is_online(self)
 end
 
 function factions.Faction.attack_parcel(self, parcelpos)
---[[    local attacked_faction = factions.get_parcel_faction(parcelpos)
-    if attacked_faction then
-        self.power = self.power - factions.power_per_attack
-        if attacked_faction.attacked_parcels[parcelpos] then 
-            attacked_faction.attacked_parcels[parcelpos][self.name] = true
-        else
-            attacked_faction.attacked_parcels[parcelpos] = {[self.name] = true}
-        end
-        attacked_faction:broadcast("Parcel ("..parcelpos..") is being attacked by "..self.name.."!!")
-        if self.power < 0. then -- punish memers
-            minetest.chat_send_all("Faction "..self.name.." has attacked too much and has now negative power!")
-        end
-        factions.save()
-    end
-    ]]
+	if config.attack_parcel then
+		local attacked_faction = factions.get_parcel_faction(parcelpos)
+		if attacked_faction then
+			self.power = self.power - factions.power_per_attack
+			if attacked_faction.attacked_parcels[parcelpos] then 
+				attacked_faction.attacked_parcels[parcelpos][self.name] = true
+			else
+				attacked_faction.attacked_parcels[parcelpos] = {[self.name] = true}
+			end
+			attacked_faction:broadcast("Parcel ("..parcelpos..") is being attacked by "..self.name.."!!")
+			if self.power < 0. then -- punish memers
+				minetest.chat_send_all("Faction "..self.name.." has attacked too much and has now negative power!")
+			end
+			factions.save()
+		end    
+	end
 end
 
 function factions.Faction.stop_attack(self, parcelpos)
