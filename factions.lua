@@ -138,16 +138,43 @@ function factions.Faction.increase_power(self, power)
     if self.power > self.maxpower  - self.usedpower then
         self.power = self.maxpower - self.usedpower
     end
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		for player, _ in pairs(self.players) do
+			local realplayer = playerslist[i]
+			if realplayer:get_player_name() == player then
+				updateHudPower(realplayer,self)
+			end
+		end
+	end
     factions.save()
 end
 
 function factions.Faction.decrease_power(self, power)
     self.power = self.power - power
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		for player, _ in pairs(self.players) do
+			local realplayer = playerslist[i]
+			if realplayer:get_player_name() == player then
+				updateHudPower(realplayer,self)
+			end
+		end
+	end
     factions.save()
 end
 
 function factions.Faction.increase_maxpower(self, power)
     self.maxpower = self.maxpower + power
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		for player, _ in pairs(self.players) do
+			local realplayer = playerslist[i]
+			if realplayer:get_player_name() == player then
+				updateHudPower(realplayer,self)
+			end
+		end
+	end
     factions.save()
 end
 
@@ -156,10 +183,28 @@ function factions.Faction.decrease_maxpower(self, power)
     if self.maxpower < 0. then -- should not happen
         self.maxpower = 0.
     end
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		for player, _ in pairs(self.players) do
+			local realplayer = playerslist[i]
+			if realplayer:get_player_name() == player then
+				updateHudPower(realplayer,self)
+			end
+		end
+	end
 end
 
 function factions.Faction.increase_usedpower(self, power)
     self.usedpower = self.usedpower + power
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		for player, _ in pairs(self.players) do
+			local realplayer = playerslist[i]
+			if realplayer:get_player_name() == player then
+				updateHudPower(realplayer,self)
+			end
+		end
+	end
 end
 
 function factions.Faction.decrease_usedpower(self, power)
@@ -167,6 +212,15 @@ function factions.Faction.decrease_usedpower(self, power)
     if self.usedpower < 0. then
         self.usedpower = 0.
     end
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		for player, _ in pairs(self.players) do
+			local realplayer = playerslist[i]
+			if realplayer:get_player_name() == player then
+				updateHudPower(realplayer,self)
+			end
+		end
+	end
 end
 
 function factions.Faction.count_land(self)
@@ -182,6 +236,15 @@ function factions.Faction.add_player(self, player, rank)
     self.players[player] = rank or self.default_rank
     factions.players[player] = self.name
     self.invited_players[player] = nil
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		local realplayer = playerslist[i]
+		if realplayer:get_player_name() == player then
+			createHudFactionName(realplayer,self.name)
+			createHudPower(realplayer,self)
+			break
+		end
+	end
     factions.save()
 end
 
@@ -197,6 +260,14 @@ function factions.Faction.remove_player(self, player)
     factions.players[player] = nil
     self:on_player_leave(player)
 	self:check_players_in_faction(self)
+	local playerslist = minetest.get_connected_players()
+	for i in pairs(playerslist) do
+		local realplayer = playerslist[i]
+		if realplayer:get_player_name() == player then
+			removeHud(realplayer,"1")
+			removeHud(realplayer,"2")
+		end
+	end
     factions.save()
 end
 
@@ -244,7 +315,8 @@ end
 
 --! @brief disband faction, updates global players and parcels table
 function factions.Faction.disband(self, reason)
-    for k, _ in pairs(self.players) do -- remove players affiliation
+	local playerslist = minetest.get_connected_players()
+    for k, _ in pairs(factions.players) do -- remove players affiliation
         factions.players[k] = nil
     end
     for k, v in pairs(self.land) do -- remove parcel claims
@@ -252,6 +324,14 @@ function factions.Faction.disband(self, reason)
     end
     self:on_disband(reason)
     factions.factions[self.name] = nil
+	for i in pairs(playerslist) do
+		local realplayer = playerslist[i]
+		local faction = factions.get_player_faction(realplayer:get_player_name())
+        if not faction then
+			removeHud(realplayer,"1")
+			removeHud(realplayer,"2")
+		end
+	end
     factions.save()
 end
 
@@ -769,6 +849,57 @@ end
 
 hud_ids = {}
 
+createHudFactionName = function(player,factionname)
+	local name = player:get_player_name()
+	local id_name = name .. "1"
+	if not hud_ids[id_name] then
+		hud_ids[id_name] = player:hud_add({
+			hud_elem_type = "text",
+			name = "factionName",
+			number = 0xFFFFFF,
+			position = {x=1, y = 0},
+			text = "Faction "..factionname,
+			scale = {x=1, y=1},
+			alignment = {x=-1, y=0},
+			offset = {x = -20, y = 20}
+		})
+	end
+end
+
+createHudPower = function(player,faction)
+	local name = player:get_player_name()
+	local id_name = name .. "2"
+	if not hud_ids[id_name] then
+		hud_ids[id_name] = player:hud_add({
+			hud_elem_type = "text",
+			name = "powerWatch",
+			number = 0xFFFFFF,
+			position = {x=0.9, y = .98},
+			text = "Power "..faction.power.."/"..faction.maxpower - faction.usedpower.."/"..faction.maxpower,
+			scale = {x=1, y=1},
+			alignment = {x=-1, y=0},
+			offset = {x = 0, y = 0}
+		})
+	end
+end
+
+updateHudPower = function(player,faction)
+	local name = player:get_player_name()
+	local id_name = name .. "2"
+	if hud_ids[id_name] then
+		player:hud_change(hud_ids[id_name],"text","Power "..faction.power.."/"..faction.maxpower - faction.usedpower.."/"..faction.maxpower)
+	end
+end
+
+removeHud = function(player,numberString)
+	local name = player:get_player_name()
+	local id_name = name .. numberString
+	if hud_ids[id_name] then
+		player:hud_remove(hud_ids[id_name])
+		hud_ids[id_name] = nil
+	end
+end
+
 hudUpdate = function()
 	minetest.after(.5, 
 	function()
@@ -777,13 +908,15 @@ hudUpdate = function()
 			local player = playerslist[i]
 			local name = player:get_player_name()
 			local faction = factions.get_faction_at(player:getpos())
-			if hud_ids[name] then
-				player:hud_change(hud_ids[name],"text",(faction and faction.name) or "Wilderness")
+			local id_name = name .. "0"
+			if hud_ids[id_name] then
+				player:hud_change(hud_ids[id_name],"text",(faction and faction.name) or "Wilderness")
 			end
 		end
 		hudUpdate()
 	end)
 end
+
 factionUpdate = function()
 	minetest.after(factions.tick_time, 
 	function()
@@ -795,7 +928,7 @@ end
 minetest.register_on_joinplayer(
 function(player)
 	local name = player:get_player_name()
-	hud_ids[name] = player:hud_add({
+	hud_ids[name .. "0"] = player:hud_add({
 		hud_elem_type = "text",
 		name = "factionLand",
 		number = 0xFFFFFF,
@@ -807,6 +940,8 @@ function(player)
     local faction = factions.get_player_faction(name)
     if faction then
         faction.last_logon = os.time()
+		createHudFactionName(player,faction.name)
+		createHudPower(player,faction)
     end
 end
 )
@@ -814,8 +949,13 @@ end
 minetest.register_on_leaveplayer(
 	function(player)
 		local name = player:get_player_name()
-		player:hud_remove(hud_ids[name])
-		hud_ids[name] = nil
+		local id_name = name .. "0"
+		if hud_ids[id_name] then
+			player:hud_remove(hud_ids[id_name])
+			hud_ids[id_name] = nil
+		end
+		removeHud(player,"1")
+		removeHud(player,"2")
 	end
 )
 

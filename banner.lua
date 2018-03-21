@@ -1,5 +1,3 @@
-local power_per_banner = 10.
-
 -- nodes
 minetest.register_node("factions:power_banner", {
     drawtype = "normal",
@@ -22,7 +20,7 @@ minetest.register_node("factions:power_banner", {
         if facname then
             local faction = factions.factions[facname]
             if faction then
-                faction:decrease_maxpower(power_per_banner)
+                faction:decrease_maxpower(config.power_per_banner)
             end
         end
 		minetest.node_dig(pos, n, p)
@@ -67,7 +65,7 @@ after_powerbanner_placed = function(pos, player, itemstack, pointed_thing)
         local banner_string = "bg_white.png"--factions[faction].banner
         minetest.get_meta(pos):set_string("banner", banner_string)
         minetest.get_meta(pos):set_string("faction", faction)
-        factions.factions[faction]:increase_maxpower(power_per_banner)
+        factions.factions[faction]:increase_maxpower(config.power_per_banner)
     end
 end
 
@@ -81,4 +79,26 @@ after_deathbanner_placed = function(pos, player, itemstack, pointed_thing)
         minetest.get_meta(pos):set_string("faction", attacking_faction.name)
     end
     minetest.get_meta(pos):set_string("banner", "death_uv.png")
+end
+
+if minetest.get_modpath("default") then
+	minetest.register_craft({
+		output = 'factions:power_banner',
+		recipe = {
+			{'default:mese_crystal','default:mese_crystal','default:mese_crystal'},
+			{'default:mese_crystal','default:goldblock','default:mese_crystal'},
+			{'default:mese_crystal','default:mese_crystal','default:mese_crystal'}
+		}
+	})
+end
+
+if minetest.get_modpath("default") and minetest.get_modpath("bones") then
+	minetest.register_craft({
+		output = 'factions:death_banner',
+		recipe = {
+			{'default:obsidian','default:obsidian','default:obsidian'},
+			{'default:obsidian','bones:bones','default:obsidian'},
+			{'default:obsidian','default:obsidian','default:obsidian'}
+		}
+	})
 end

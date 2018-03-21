@@ -22,6 +22,8 @@ maximum_faction_inactivity (Maximum faction inactivity) int 604800
 power (Starting power) float 2
 # Maximum power of a faction.
 maxpower (Maximum power) float 2
+# How much power the banners make.
+power_per_banner (power-per-banner) float 10
 
 [BoolSettings]
 
