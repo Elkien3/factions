@@ -249,8 +249,14 @@ function factions.Faction.add_player(self, player, rank)
 end
 
 function factions.Faction.check_players_in_faction(self)
-	local players = #self.players
-	if players < 1 then
+	local i = 0
+	if self.players then
+		for player in pairs(self.players) do
+			i = i + 1
+		end
+	end
+	--local players = #self.players
+	if i < 1 then
 		self:disband("Zero players on faction.")
 	end
 end
@@ -487,6 +493,10 @@ function factions.Faction.attack_parcel(self, parcelpos)
 	if config.attack_parcel then
 		local attacked_faction = factions.get_parcel_faction(parcelpos)
 		if attacked_faction then
+			if self.power < factions.power_per_attack then
+				self:broadcast("You do not have enough power to attack!!"
+				return
+			end
 			self.power = self.power - factions.power_per_attack
 			if attacked_faction.attacked_parcels[parcelpos] then 
 				attacked_faction.attacked_parcels[parcelpos][self.name] = true
@@ -608,7 +618,7 @@ end
 --??????????????
 
 function factions.get_parcel_pos(pos)
-    return math.floor(pos.x / 16.)..","..math.floor(pos.z / 16.)
+    return math.floor(pos.x / 64.)..","..math.floor(pos.z / 64.)
 end
 
 function factions.get_player_faction(playername)

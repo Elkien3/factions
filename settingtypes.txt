@@ -1,7 +1,7 @@
 [ValueSettings]
 
 # The max depth of protection from a parcel.
-protection_max_depth (Protection max depth) float -512
+protection_max_depth (Protection max depth) float -50
 # Cost of power to claim a parcel of land.
 power_per_parcel (Power-per-parcel) float 0.5
 # Power lost on death.

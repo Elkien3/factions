@@ -75,7 +75,7 @@ after_deathbanner_placed = function(pos, player, itemstack, pointed_thing)
     if attacking_faction ~= nil then
         local parcelpos = factions.get_parcel_pos(pos)
         attacking_faction = factions.factions[attacking_faction]
-        attacking_faction:attack_parcel(parcelpos)
+        if not attacking_faction:attack_parcel(parcelpos) then return false end
         minetest.get_meta(pos):set_string("faction", attacking_faction.name)
     end
     minetest.get_meta(pos):set_string("banner", "death_uv.png")
@@ -86,7 +86,7 @@ if minetest.get_modpath("default") then
 		output = 'factions:power_banner',
 		recipe = {
 			{'default:mese_crystal','default:mese_crystal','default:mese_crystal'},
-			{'default:mese_crystal','default:goldblock','default:mese_crystal'},
+			{'default:mese_crystal','default:diamondblock','default:mese_crystal'},
 			{'default:mese_crystal','default:mese_crystal','default:mese_crystal'}
 		}
 	})
